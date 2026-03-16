@@ -7,11 +7,16 @@ import { detectToolCallLoop, recordToolCall, recordToolCallOutcome } from './loo
 const MAX_ROUNDS = 200  // 安全兜底，实际由循环检测控制（与 OpenClaw 一致）
 
 export async function agenticAsk(prompt, config, emit) {
-  const { provider = 'anthropic', baseUrl, apiKey, model, tools = ['search', 'code'], searchApiKey, history, proxyUrl, stream = true, system } = config
+  const { provider = 'anthropic', baseUrl, apiKey, model, tools = ['search', 'code'], searchApiKey, history, proxyUrl, stream = true, schema, retries = 2, system } = config
   
   if (!apiKey) throw new Error('API Key required')
   
-  const toolDefs = buildToolDefs(tools)
+  // Schema mode: structured output with validation + retry
+  if (schema) {
+    return await schemaAsk(prompt, config, emit)
+  }
+  
+  const { defs: toolDefs, customTools } = buildToolDefs(tools)
   
   // Build messages
   const messages = []
@@ -72,7 +77,7 @@ export async function agenticAsk(prompt, config, emit) {
       }
       
       emit('tool', { name: call.name, input: call.input })
-      const result = await executeTool(call.name, call.input, { searchApiKey })
+      const result = await executeTool(call.name, call.input, { searchApiKey, customTools })
       console.log(`[Round ${round}] Tool result:`, JSON.stringify(result).slice(0, 100))
       
       recordToolCallOutcome(state, call.name, call.input, result, null)
@@ -103,13 +108,12 @@ async function anthropicChat({ messages, tools, model = 'claude-sonnet-4', baseU
   const base = baseUrl.replace(/\/+$/, '')
   const url = base.endsWith('/v1') ? `${base}/messages` : `${base}/v1/messages`
   
-  // Convert messages to Anthropic format
+  // Convert messages to Anthropic format (handle tool_use/tool_result)
   const anthropicMessages = []
   for (const m of messages) {
     if (m.role === 'user') {
       anthropicMessages.push({ role: 'user', content: m.content })
     } else if (m.role === 'assistant') {
-      // If assistant had tool calls, include them as content blocks
       if (m.tool_calls?.length) {
         const blocks = []
         if (m.content) blocks.push({ type: 'text', text: m.content })
@@ -121,10 +125,8 @@ async function anthropicChat({ messages, tools, model = 'claude-sonnet-4', baseU
         anthropicMessages.push({ role: 'assistant', content: m.content })
       }
     } else if (m.role === 'tool') {
-      // Anthropic requires tool results as role:user with tool_result content blocks
-      // Merge consecutive tool results into one user message
-      const last = anthropicMessages[anthropicMessages.length - 1]
       const toolResult = { type: 'tool_result', tool_use_id: m.tool_call_id, content: m.content }
+      const last = anthropicMessages[anthropicMessages.length - 1]
       if (last?.role === 'user' && Array.isArray(last.content) && last.content[0]?.type === 'tool_result') {
         last.content.push(toolResult)
       } else {
@@ -144,20 +146,27 @@ async function anthropicChat({ messages, tools, model = 'claude-sonnet-4', baseU
   
   const headers = { 'content-type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' }
 
-  if (stream) {
-    if (proxyUrl) {
-      // Stream via transparent proxy (Vercel Edge / link2web SSE)
-      const proxyHeaders = { ...headers, 'x-base-url': baseUrl || 'https://api.anthropic.com', 'x-provider': 'anthropic' }
-      return await streamAnthropic(proxyUrl, proxyHeaders, body, emit)
-    }
+  if (stream && !proxyUrl) {
     // Stream mode — direct SSE
     return await streamAnthropic(url, headers, body, emit)
   }
 
+  if (stream && proxyUrl) {
+    // Stream via proxy: send non-stream request, simulate token output
+    body.stream = false
+  }
+
   const response = await callLLM(url, apiKey, body, proxyUrl, true)
   
+  const text = response.content.find(c => c.type === 'text')?.text || ''
+  
+  // Simulate streaming if requested
+  if (stream && proxyUrl && text) {
+    simulateStream(text, emit)
+  }
+  
   return {
-    content: response.content.find(c => c.type === 'text')?.text || '',
+    content: text,
     tool_calls: response.content.filter(c => c.type === 'tool_use').map(t => ({
       id: t.id, name: t.name, input: t.input
     })),
@@ -174,12 +183,14 @@ async function openaiChat({ messages, tools, model = 'gpt-4', baseUrl = 'https:/
   
   const headers = { 'content-type': 'application/json', 'authorization': `Bearer ${apiKey}` }
 
-  if (stream) {
-    if (proxyUrl) {
-      const proxyHeaders = { ...headers, 'x-base-url': baseUrl || 'https://api.openai.com', 'x-provider': 'openai', 'x-api-key': apiKey }
-      return await streamOpenAI(proxyUrl, proxyHeaders, body, emit)
-    }
+  if (stream && !proxyUrl) {
+    // Stream mode — direct SSE
     return await streamOpenAI(url, headers, body, emit)
+  }
+
+  if (stream && proxyUrl) {
+    // Stream via proxy: send non-stream request, simulate token output
+    body.stream = false
   }
 
   const response = await callLLM(url, apiKey, body, proxyUrl, false)
@@ -192,8 +203,15 @@ async function openaiChat({ messages, tools, model = 'gpt-4', baseUrl = 'https:/
   const choice = response.choices?.[0]
   if (!choice) return { content: '', tool_calls: [], stop_reason: 'stop' }
   
+  const text = choice.message?.content || ''
+  
+  // Simulate streaming if requested
+  if (stream && proxyUrl && text) {
+    simulateStream(text, emit)
+  }
+  
   return {
-    content: choice.message?.content || '',
+    content: text,
     tool_calls: choice.message?.tool_calls?.map(t => {
       let input = {}
       try { input = JSON.parse(t.function.arguments || '{}') } catch {}
@@ -204,6 +222,13 @@ async function openaiChat({ messages, tools, model = 'gpt-4', baseUrl = 'https:/
 }
 
 // ── Streaming Functions ──
+
+// Simulate streaming for proxy mode (proxy can't forward SSE)
+function simulateStream(text, emit) {
+  // Emit the full text at once as a single token event
+  // The renderer handles incremental append, so this works fine
+  emit('token', { text })
+}
 
 async function streamAnthropic(url, headers, body, emit) {
   const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) })
@@ -442,18 +467,43 @@ function reassembleSSE(raw) {
 
 function buildToolDefs(tools) {
   const defs = []
-  if (tools.includes('search')) {
-    defs.push({ name: 'search', description: 'Search the web for current information', input_schema: { type: 'object', properties: { query: { type: 'string', description: 'Search query' } }, required: ['query'] } })
+  const customTools = []
+  
+  for (const tool of tools) {
+    if (typeof tool === 'string') {
+      // Built-in tool
+      if (tool === 'search') {
+        defs.push({ name: 'search', description: 'Search the web for current information', input_schema: { type: 'object', properties: { query: { type: 'string', description: 'Search query' } }, required: ['query'] } })
+      } else if (tool === 'code') {
+        defs.push({ name: 'execute_code', description: 'Execute Python code', input_schema: { type: 'object', properties: { code: { type: 'string', description: 'Python code to execute' } }, required: ['code'] } })
+      }
+    } else if (typeof tool === 'object' && tool.name) {
+      // Custom tool
+      defs.push({
+        name: tool.name,
+        description: tool.description || '',
+        input_schema: tool.parameters || tool.input_schema || { type: 'object', properties: {} }
+      })
+      customTools.push(tool)
+    }
   }
-  if (tools.includes('code')) {
-    defs.push({ name: 'execute_code', description: 'Execute Python code', input_schema: { type: 'object', properties: { code: { type: 'string', description: 'Python code to execute' } }, required: ['code'] } })
-  }
-  return defs
+  
+  return { defs, customTools }
 }
 
 async function executeTool(name, input, config) {
+  // Check custom tools first
+  if (config.customTools) {
+    const custom = config.customTools.find(t => t.name === name)
+    if (custom && custom.execute) {
+      return await custom.execute(input)
+    }
+  }
+  
+  // Built-in tools
   if (name === 'search') return await searchWeb(input.query, config.searchApiKey)
   if (name === 'execute_code') return { output: '[Code execution not available in browser]' }
+  
   return { error: 'Unknown tool' }
 }
 
@@ -465,4 +515,107 @@ async function searchWeb(query, apiKey) {
   })
   const data = await response.json()
   return { results: data.results || [] }
+}
+
+// ── Schema Mode (Structured Output) ──
+
+async function schemaAsk(prompt, config, emit) {
+  const { provider = 'anthropic', baseUrl, apiKey, model, history, proxyUrl, schema, retries = 2 } = config
+  
+  const schemaStr = JSON.stringify(schema, null, 2)
+  const systemPrompt = `You must respond with valid JSON that matches this schema:\n${schemaStr}\n\nRules:\n- Output ONLY the JSON object, no markdown, no explanation, no code fences\n- All required fields must be present\n- Types must match exactly`
+  
+  const messages = []
+  if (history?.length) messages.push(...history)
+  messages.push({ role: 'user', content: prompt })
+  
+  let lastError = null
+  
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    if (attempt > 0) {
+      console.log(`[schema] Retry ${attempt}/${retries}: ${lastError}`)
+      emit('status', { message: `Retry ${attempt}/${retries}...` })
+      // Add error feedback for retry
+      messages.push({ role: 'assistant', content: lastError.raw })
+      messages.push({ role: 'user', content: `That JSON was invalid: ${lastError.message}\n\nPlease fix and return ONLY valid JSON matching the schema.` })
+    }
+    
+    emit('status', { message: attempt === 0 ? 'Generating structured output...' : `Retry ${attempt}/${retries}...` })
+    
+    const chatFn = provider === 'anthropic' ? anthropicChat : openaiChat
+    const response = await chatFn({
+      messages: [{ role: 'user', content: systemPrompt + '\n\n' + prompt }],
+      tools: [], model, baseUrl, apiKey, proxyUrl, stream: false, emit
+    })
+    
+    const raw = response.content.trim()
+    
+    // Try to extract JSON (handle markdown fences)
+    let jsonStr = raw
+    const fenceMatch = raw.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/)
+    if (fenceMatch) jsonStr = fenceMatch[1].trim()
+    
+    // Parse
+    let parsed
+    try {
+      parsed = JSON.parse(jsonStr)
+    } catch (e) {
+      lastError = { message: `JSON parse error: ${e.message}`, raw }
+      continue
+    }
+    
+    // Validate against schema
+    const validation = validateSchema(parsed, schema)
+    if (!validation.valid) {
+      lastError = { message: validation.error, raw }
+      continue
+    }
+    
+    // Success
+    return { answer: raw, data: parsed, attempts: attempt + 1 }
+  }
+  
+  // All retries exhausted
+  throw new Error(`Schema validation failed after ${retries + 1} attempts: ${lastError.message}`)
+}
+
+function validateSchema(data, schema) {
+  if (!schema || !schema.type) return { valid: true }
+  
+  // Type check
+  if (schema.type === 'object') {
+    if (typeof data !== 'object' || data === null || Array.isArray(data)) {
+      return { valid: false, error: `Expected object, got ${Array.isArray(data) ? 'array' : typeof data}` }
+    }
+    // Required fields
+    if (schema.required) {
+      for (const field of schema.required) {
+        if (!(field in data)) {
+          return { valid: false, error: `Missing required field: "${field}"` }
+        }
+      }
+    }
+    // Property types
+    if (schema.properties) {
+      for (const [key, prop] of Object.entries(schema.properties)) {
+        if (key in data && data[key] !== null && data[key] !== undefined) {
+          const val = data[key]
+          if (prop.type === 'string' && typeof val !== 'string') return { valid: false, error: `Field "${key}" should be string, got ${typeof val}` }
+          if (prop.type === 'number' && typeof val !== 'number') return { valid: false, error: `Field "${key}" should be number, got ${typeof val}` }
+          if (prop.type === 'boolean' && typeof val !== 'boolean') return { valid: false, error: `Field "${key}" should be boolean, got ${typeof val}` }
+          if (prop.type === 'array' && !Array.isArray(val)) return { valid: false, error: `Field "${key}" should be array, got ${typeof val}` }
+          // Enum check
+          if (prop.enum && !prop.enum.includes(val)) return { valid: false, error: `Field "${key}" must be one of: ${prop.enum.join(', ')}` }
+        }
+      }
+    }
+  } else if (schema.type === 'array') {
+    if (!Array.isArray(data)) return { valid: false, error: `Expected array, got ${typeof data}` }
+  } else if (schema.type === 'string') {
+    if (typeof data !== 'string') return { valid: false, error: `Expected string, got ${typeof data}` }
+  } else if (schema.type === 'number') {
+    if (typeof data !== 'number') return { valid: false, error: `Expected number, got ${typeof data}` }
+  }
+  
+  return { valid: true }
 }

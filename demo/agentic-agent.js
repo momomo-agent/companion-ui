@@ -144,7 +144,12 @@ async function anthropicChat({ messages, tools, model = 'claude-sonnet-4', baseU
   
   const headers = { 'content-type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' }
 
-  if (stream && !proxyUrl) {
+  if (stream) {
+    if (proxyUrl) {
+      // Stream via transparent proxy (Vercel Edge / link2web SSE)
+      const proxyHeaders = { ...headers, 'x-base-url': baseUrl || 'https://api.anthropic.com', 'x-provider': 'anthropic' }
+      return await streamAnthropic(proxyUrl, proxyHeaders, body, emit)
+    }
     // Stream mode — direct SSE
     return await streamAnthropic(url, headers, body, emit)
   }
@@ -169,8 +174,11 @@ async function openaiChat({ messages, tools, model = 'gpt-4', baseUrl = 'https:/
   
   const headers = { 'content-type': 'application/json', 'authorization': `Bearer ${apiKey}` }
 
-  if (stream && !proxyUrl) {
-    // Stream mode — direct SSE
+  if (stream) {
+    if (proxyUrl) {
+      const proxyHeaders = { ...headers, 'x-base-url': baseUrl || 'https://api.openai.com', 'x-provider': 'openai', 'x-api-key': apiKey }
+      return await streamOpenAI(proxyUrl, proxyHeaders, body, emit)
+    }
     return await streamOpenAI(url, headers, body, emit)
   }
 

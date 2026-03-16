@@ -730,7 +730,9 @@ It explores how language shapes perception — really thought-provoking."`
       } catch (err) {
         removeTyping()
         removeToolIndicators()
-        addMessage('agent', `<span style="color:#e85555;font-size:12px">Error: ${esc(err.message)}</span>`)
+        const errMsg = err instanceof Error ? err.message : (typeof err === 'string' ? err : JSON.stringify(err, null, 2))
+        console.error('[Companion] Error:', err)
+        addMessage('agent', `<span style="color:#e85555;font-size:12px">Error: ${esc(errMsg)}</span>`)
       } finally {
         btn.disabled = false
         input.focus()

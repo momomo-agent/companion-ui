@@ -152,8 +152,10 @@ async function anthropicChat({ messages, tools, model = 'claude-sonnet-4', baseU
   }
 
   if (stream && proxyUrl) {
-    // Stream via proxy: send non-stream request, simulate token output
-    body.stream = false
+    // Stream via transparent proxy (Vercel Edge / similar)
+    // Send stream:true request through proxy with custom headers
+    const proxyHeaders = { ...headers, 'x-base-url': baseUrl || 'https://api.anthropic.com', 'x-provider': 'anthropic' }
+    return await streamAnthropic(proxyUrl, proxyHeaders, body, emit)
   }
 
   const response = await callLLM(url, apiKey, body, proxyUrl, true)
@@ -184,13 +186,12 @@ async function openaiChat({ messages, tools, model = 'gpt-4', baseUrl = 'https:/
   const headers = { 'content-type': 'application/json', 'authorization': `Bearer ${apiKey}` }
 
   if (stream && !proxyUrl) {
-    // Stream mode — direct SSE
     return await streamOpenAI(url, headers, body, emit)
   }
 
   if (stream && proxyUrl) {
-    // Stream via proxy: send non-stream request, simulate token output
-    body.stream = false
+    const proxyHeaders = { ...headers, 'x-base-url': baseUrl || 'https://api.openai.com', 'x-provider': 'openai', 'x-api-key': apiKey }
+    return await streamOpenAI(proxyUrl, proxyHeaders, body, emit)
   }
 
   const response = await callLLM(url, apiKey, body, proxyUrl, false)

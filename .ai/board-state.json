@@ -1,0 +1,74 @@
+{
+  "F001": {
+    "status": "plan",
+    "reviewCount": 0,
+    "reviewLog": [],
+    "exitChecks": {
+      "plan": {},
+      "dev": {},
+      "test": {}
+    },
+    "blockedReason": null,
+    "rejectReason": null
+  },
+  "F002": {
+    "status": "plan",
+    "reviewCount": 0,
+    "reviewLog": [],
+    "exitChecks": {
+      "plan": {},
+      "dev": {},
+      "test": {}
+    },
+    "blockedReason": null,
+    "rejectReason": null
+  },
+  "F003": {
+    "status": "plan",
+    "reviewCount": 0,
+    "reviewLog": [],
+    "exitChecks": {
+      "plan": {},
+      "dev": {},
+      "test": {}
+    },
+    "blockedReason": null,
+    "rejectReason": null
+  },
+  "F004": {
+    "status": "plan",
+    "reviewCount": 0,
+    "reviewLog": [],
+    "exitChecks": {
+      "plan": {},
+      "dev": {},
+      "test": {}
+    },
+    "blockedReason": null,
+    "rejectReason": null
+  },
+  "F005": {
+    "status": "plan",
+    "reviewCount": 0,
+    "reviewLog": [],
+    "exitChecks": {
+      "plan": {},
+      "dev": {},
+      "test": {}
+    },
+    "blockedReason": null,
+    "rejectReason": null
+  },
+  "F006": {
+    "status": "plan",
+    "reviewCount": 0,
+    "reviewLog": [],
+    "exitChecks": {
+      "plan": {},
+      "dev": {},
+      "test": {}
+    },
+    "blockedReason": null,
+    "rejectReason": null
+  }
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "F001",
+    "description": "布局：左 Canvas 70% + 右对话 30%",
+    "milestone": "M1",
+    "passes": false,
+    "auto": true
+  },
+  {
+    "id": "F002",
+    "description": "Canvas 组件渲染器（movie-card / progress / diagram / text-highlight）",
+    "milestone": "M1",
+    "passes": false,
+    "auto": true
+  },
+  {
+    "id": "F003",
+    "description": "Agent 协议：回复带 canvas annotation，前端解析渲染",
+    "milestone": "M1",
+    "passes": false,
+    "auto": true
+  },
+  {
+    "id": "F004",
+    "description": "待机状态：Canvas 显示存在感符号",
+    "milestone": "M1",
+    "passes": false,
+    "auto": true
+  },
+  {
+    "id": "F005",
+    "description": "动画系统：元素进入/退出/布局变化",
+    "milestone": "M1",
+    "passes": false,
+    "auto": true
+  },
+  {
+    "id": "F006",
+    "description": "接入 agentic-lite 做 LLM 调用",
+    "milestone": "M1",
+    "passes": false,
+    "auto": true
+  }
+]

@@ -102,10 +102,41 @@ export async function agenticAsk(prompt, config, emit) {
 async function anthropicChat({ messages, tools, model = 'claude-sonnet-4', baseUrl = 'https://api.anthropic.com', apiKey, proxyUrl, stream = false, emit, system }) {
   const base = baseUrl.replace(/\/+$/, '')
   const url = base.endsWith('/v1') ? `${base}/messages` : `${base}/v1/messages`
+  
+  // Convert messages to Anthropic format
+  const anthropicMessages = []
+  for (const m of messages) {
+    if (m.role === 'user') {
+      anthropicMessages.push({ role: 'user', content: m.content })
+    } else if (m.role === 'assistant') {
+      // If assistant had tool calls, include them as content blocks
+      if (m.tool_calls?.length) {
+        const blocks = []
+        if (m.content) blocks.push({ type: 'text', text: m.content })
+        for (const tc of m.tool_calls) {
+          blocks.push({ type: 'tool_use', id: tc.id, name: tc.name, input: tc.input })
+        }
+        anthropicMessages.push({ role: 'assistant', content: blocks })
+      } else {
+        anthropicMessages.push({ role: 'assistant', content: m.content })
+      }
+    } else if (m.role === 'tool') {
+      // Anthropic requires tool results as role:user with tool_result content blocks
+      // Merge consecutive tool results into one user message
+      const last = anthropicMessages[anthropicMessages.length - 1]
+      const toolResult = { type: 'tool_result', tool_use_id: m.tool_call_id, content: m.content }
+      if (last?.role === 'user' && Array.isArray(last.content) && last.content[0]?.type === 'tool_result') {
+        last.content.push(toolResult)
+      } else {
+        anthropicMessages.push({ role: 'user', content: [toolResult] })
+      }
+    }
+  }
+  
   const body = {
     model,
     max_tokens: 4096,
-    messages: messages.map(m => ({ role: m.role, content: m.content })),
+    messages: anthropicMessages,
     stream,
   }
   if (system) body.system = system

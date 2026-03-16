@@ -27,12 +27,13 @@ export default async function handler(req) {
     ? (base.includes('/v1') ? `${base}/chat/completions` : `${base}/v1/chat/completions`)
     : (base.endsWith('/v1') ? `${base}/messages` : `${base}/v1/messages`)
 
-  // Build upstream headers
+  // Build upstream headers — send both auth methods, upstream picks what it needs
   const upstreamHeaders = { 'Content-Type': 'application/json' }
-  if (provider === 'openai') {
-    upstreamHeaders['authorization'] = `Bearer ${apiKey}`
-  } else {
+  if (apiKey) {
     upstreamHeaders['x-api-key'] = apiKey
+    upstreamHeaders['authorization'] = `Bearer ${apiKey}`
+  }
+  if (provider !== 'openai') {
     upstreamHeaders['anthropic-version'] = '2023-06-01'
   }
 

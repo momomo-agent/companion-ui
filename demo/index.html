@@ -425,15 +425,16 @@ It's by the same duo who made Resolution — low budget but deeply inventive."`
       const typingEl = addTypingIndicator()
 
       try {
-        const apiUrl = config.baseUrl.replace(/\/$/, '') + '/v1/messages'
+        // Use /api/proxy to avoid CORS issues
+        const proxyUrl = '/api/proxy'
 
-        const res = await fetch(apiUrl, {
+        const res = await fetch(proxyUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'x-api-key': config.apiKey,
+            'x-base-url': config.baseUrl,
             'anthropic-version': '2023-06-01',
-            'anthropic-dangerous-direct-browser-access': 'true',
           },
           body: JSON.stringify({
             model: config.model,

@@ -77,10 +77,10 @@
     .image-grid img { width: 100%; border-radius: 8px; object-fit: cover; aspect-ratio: 16/10; background: #1a1a1a; }
 
     .list-card h3 { color: #e8856a; margin-bottom: 16px; font-size: 16px; }
-    .list-card .list-item { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; justify-content: space-between; }
+    .list-card .list-item { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; justify-content: space-between; align-items: center; gap: 16px; }
     .list-card .list-item:last-child { border-bottom: none; }
-    .list-card .item-title { color: #ddd; font-size: 14px; }
-    .list-card .item-detail { color: #777; font-size: 13px; }
+    .list-card .item-title { color: #ddd; font-size: 14px; flex: 1; }
+    .list-card .item-detail { color: #777; font-size: 13px; text-align: right; flex-shrink: 0; }
 
     /* Chat panel — right 30% */
     .chat-panel {
@@ -309,7 +309,14 @@ It's by the same duo who made Resolution — low budget but deeply inventive."`
     }
 
     function stripCanvasAnnotations(text) {
-      return text.replace(/<!--canvas:\S+\s+[\s\S]*?-->/g, '').trim()
+      // Remove complete annotations
+      let result = text.replace(/<!--canvas:\S+\s+[\s\S]*?-->/g, '')
+      // Also remove incomplete annotations (streaming: <!-- arrived but --> hasn't yet)
+      const incompleteIdx = result.indexOf('<!--canvas:')
+      if (incompleteIdx !== -1) {
+        result = result.substring(0, incompleteIdx)
+      }
+      return result.trim()
     }
 
     function parseCanvasAnnotations(text) {
@@ -486,6 +493,15 @@ It's by the same duo who made Resolution — low budget but deeply inventive."`
 
         // Store assistant response
         conversationHistory.push({ role: 'assistant', content: fullText })
+
+        // Final render of clean text (fixes streaming artifacts)
+        const finalClean = stripCanvasAnnotations(fullText)
+        if (finalClean) {
+          contentEl.innerHTML = marked.parse(finalClean)
+        } else {
+          // No text content, remove empty message bubble
+          msgEl.remove()
+        }
 
         // Render canvas
         const components = parseCanvasAnnotations(fullText)

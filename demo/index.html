@@ -659,7 +659,7 @@ It explores how language shapes perception — really thought-provoking."`
           // {title, subtitle, image, items[], tags[], progress, footer}
           case 'card':
             card.innerHTML = `
-              ${data.image ? `<img src="${esc(data.image)}" class="card-img" loading="lazy">` : ''}
+              ${data.image ? `<img src="${esc(data.image)}" class="card-img" loading="lazy" referrerpolicy="no-referrer">` : ''}
               ${data.title ? `<h2>${esc(data.title)}</h2>` : ''}
               ${data.subtitle ? `<div class="card-sub">${esc(data.subtitle)}</div>` : ''}
               ${(data.tags||[]).length ? `<div class="card-tags">${data.tags.map(t => `<span class="card-tag">${esc(t)}</span>`).join('')}</div>` : ''}
@@ -733,10 +733,10 @@ It explores how language shapes perception — really thought-provoking."`
           case 'media':
             if (data.images?.length) {
               card.innerHTML = `<div class="image-grid">${data.images.map(url =>
-                `<img src="${esc(typeof url === 'string' ? url : url.url)}" loading="lazy" />`
+                `<img src="${esc(typeof url === 'string' ? url : url.url)}" loading="lazy" referrerpolicy="no-referrer" />`
               ).join('')}${data.caption ? `<div class="card-footer">${esc(data.caption)}</div>` : ''}</div>`
             } else if (data.url) {
-              card.innerHTML = `<img src="${esc(data.url)}" class="card-img" loading="lazy">
+              card.innerHTML = `<img src="${esc(data.url)}" class="card-img" loading="lazy" referrerpolicy="no-referrer">
                 ${data.caption ? `<div class="card-footer">${esc(data.caption)}</div>` : ''}`
             }
             break

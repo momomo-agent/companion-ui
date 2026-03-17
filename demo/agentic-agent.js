@@ -171,11 +171,6 @@ async function anthropicChat({ messages, tools, model = 'claude-sonnet-4', baseU
   
   const text = response.content.find(c => c.type === 'text')?.text || ''
   
-  // Simulate streaming if requested
-  if (stream && proxyUrl && text) {
-    simulateStream(text, emit)
-  }
-  
   return {
     content: text,
     tool_calls: response.content.filter(c => c.type === 'tool_use').map(t => ({
@@ -215,11 +210,6 @@ async function openaiChat({ messages, tools, model = 'gpt-4', baseUrl = 'https:/
   
   const text = choice.message?.content || ''
   
-  // Simulate streaming if requested
-  if (stream && proxyUrl && text) {
-    simulateStream(text, emit)
-  }
-  
   return {
     content: text,
     tool_calls: choice.message?.tool_calls?.map(t => {
@@ -232,13 +222,6 @@ async function openaiChat({ messages, tools, model = 'gpt-4', baseUrl = 'https:/
 }
 
 // ── Streaming Functions ──
-
-// Simulate streaming for proxy mode (proxy can't forward SSE)
-function simulateStream(text, emit) {
-  // Emit the full text at once as a single token event
-  // The renderer handles incremental append, so this works fine
-  emit('token', { text })
-}
 
 async function streamAnthropic(url, headers, body, emit) {
   const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) })

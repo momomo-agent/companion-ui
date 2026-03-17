@@ -48,9 +48,7 @@
     }
     .config-panel.open { max-height: 600px; overflow: visible; }
     .config-content { padding: 14px 20px 10px; }
-    .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .config-grid .span-2 { grid-column: span 2; }
-    .field { margin-bottom: 0; }
+    .field { margin-bottom: 8px; }
     .field label {
       font-size: 10px; color: #444; display: block;
       margin-bottom: 3px; text-transform: uppercase;
@@ -307,37 +305,35 @@
 
     <div class="config-panel" id="configPanel">
       <div class="config-content">
-        <div class="config-grid">
-          <div class="field">
-            <label>Provider</label>
-            <select id="provider">
-              <option value="anthropic">Anthropic</option>
-              <option value="openai">OpenAI</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Model</label>
-            <input id="model" placeholder="claude-sonnet-4">
-          </div>
-          <div class="field span-2">
-            <label>API Key</label>
-            <input type="text" id="apiKey" placeholder="sk-...">
-          </div>
-          <div class="field span-2">
-            <label>Base URL</label>
-            <input id="baseUrl" placeholder="https://api.anthropic.com">
-          </div>
-          <div class="field">
-            <label>Search Key</label>
-            <input type="text" id="searchApiKey" placeholder="tvly-...">
-          </div>
-          <div class="field">
-            <label>
-              <input type="checkbox" id="proxyEnabled" style="margin-right:4px;vertical-align:middle;accent-color:#e8856a">
-              Proxy
-            </label>
-            <input id="proxyUrl" placeholder="proxy.link2web.site/proxy" disabled>
-          </div>
+        <div class="field">
+          <label>Provider</label>
+          <select id="provider">
+            <option value="anthropic">Anthropic</option>
+            <option value="openai">OpenAI</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>API Key</label>
+          <input type="text" id="apiKey" placeholder="sk-...">
+        </div>
+        <div class="field">
+          <label>Base URL</label>
+          <input id="baseUrl" placeholder="https://api.anthropic.com">
+        </div>
+        <div class="field">
+          <label>Model</label>
+          <input id="model" placeholder="claude-sonnet-4">
+        </div>
+        <div class="field">
+          <label>Search Key</label>
+          <input type="text" id="searchApiKey" placeholder="tvly-...">
+        </div>
+        <div class="field">
+          <label>
+            <input type="checkbox" id="proxyEnabled" style="margin-right:4px;vertical-align:middle;accent-color:#e8856a">
+            Proxy
+          </label>
+          <input id="proxyUrl" placeholder="proxy.link2web.site/proxy" disabled>
         </div>
         <div class="config-footer">
           <div class="tools-row">

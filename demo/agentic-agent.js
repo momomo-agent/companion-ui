@@ -378,7 +378,10 @@ async function callLLM(url, apiKey, body, proxyUrl, isAnthropic = false) {
       body: JSON.stringify({ url, method: 'POST', headers, body: JSON.stringify(body), mode: 'raw' })
     })
     const result = await response.json()
-    if (!result.success) throw new Error(result.error || `Proxy failed: ${result.status}`)
+    if (!result.success) {
+      const errMsg = typeof result.error === 'string' ? result.error : JSON.stringify(result.error)
+      throw new Error(errMsg || `Proxy failed: ${result.status}`)
+    }
     const rawBody = typeof result.body === 'string' ? result.body : JSON.stringify(result.body)
     if (result.status >= 400) throw new Error(`API error ${result.status}: ${rawBody.slice(0, 300)}`)
     try {

@@ -36,7 +36,7 @@
   },
   {
     "id": "F006",
-    "description": "接入 agentic-lite 做 LLM 调用",
+    "description": "接入 agentic-core 做 LLM 调用",
     "milestone": "M1",
     "passes": false,
     "auto": true

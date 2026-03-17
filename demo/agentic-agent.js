@@ -7,6 +7,15 @@ import { detectToolCallLoop, recordToolCall, recordToolCallOutcome } from './loo
 const MAX_ROUNDS = 200  // 安全兜底，实际由循环检测控制（与 OpenClaw 一致）
 
 export async function agenticAsk(prompt, config, emit) {
+  try {
+    return await _agenticAsk(prompt, config, emit)
+  } catch (e) {
+    // Ensure all errors are Error instances
+    throw e instanceof Error ? e : new Error(String(e))
+  }
+}
+
+async function _agenticAsk(prompt, config, emit) {
   const { provider = 'anthropic', baseUrl, apiKey, model, tools = ['search', 'code'], searchApiKey, history, proxyUrl, stream = true, schema, retries = 2, system } = config
   
   if (!apiKey) throw new Error('API Key required')

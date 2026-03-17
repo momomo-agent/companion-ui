@@ -179,6 +179,29 @@
       transition: opacity 0.5s;
     }
     .presence.hidden { opacity: 0; pointer-events: none; }
+
+    /* Canvas navigation */
+    .canvas-nav {
+      position: absolute; top: 12px; right: 16px; z-index: 10;
+      display: flex; align-items: center; gap: 8px;
+      opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    }
+    .canvas-nav.visible { opacity: 1; pointer-events: auto; }
+    .canvas-nav-btn {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+      color: #666; font-size: 16px; width: 28px; height: 28px;
+      border-radius: 6px; cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .canvas-nav-btn:hover { color: #e8856a; border-color: rgba(232,133,106,0.2); }
+    .canvas-nav-btn:disabled { opacity: 0.2; cursor: default; }
+    .canvas-nav-page { font-size: 11px; color: #444; min-width: 36px; text-align: center; }
+
+    /* Message anchor highlight */
+    .message.anchored .message-content {
+      outline: 1px solid rgba(232,133,106,0.15);
+      outline-offset: 4px; border-radius: 8px;
+    }
     @keyframes pulse {
       0%,100% { opacity: 0.15; transform: translate(-50%,-50%) scale(1); }
       50% { opacity: 0.35; transform: translate(-50%,-50%) scale(1.05); }
@@ -353,6 +376,11 @@
   </div>
 
   <div class="canvas" id="canvas">
+    <div class="canvas-nav" id="canvasNav">
+      <button class="canvas-nav-btn" id="canvasPrev">‹</button>
+      <span class="canvas-nav-page" id="canvasPage">0 / 0</span>
+      <button class="canvas-nav-btn" id="canvasNext">›</button>
+    </div>
     <div class="presence" id="presence">∞</div>
   </div>
 
@@ -532,7 +560,51 @@ It explores how language shapes perception — really thought-provoking."`
       document.querySelectorAll('.tool-msg').forEach(el => el.remove())
     }
 
-    // ── Canvas ──
+    // ── Canvas History ──
+    const canvasPages = [] // [{components, msgEl}]
+    let canvasIndex = -1
+
+    function updateCanvasNav() {
+      const nav = $('canvasNav')
+      if (canvasPages.length === 0) {
+        nav.classList.remove('visible')
+        return
+      }
+      nav.classList.add('visible')
+      $('canvasPage').textContent = `${canvasIndex + 1} / ${canvasPages.length}`
+      $('canvasPrev').disabled = canvasIndex <= 0
+      $('canvasNext').disabled = canvasIndex >= canvasPages.length - 1
+    }
+
+    function showCanvasPage(idx) {
+      if (idx < 0 || idx >= canvasPages.length) return
+      canvasIndex = idx
+      const page = canvasPages[idx]
+      renderCanvasContent(page.components)
+      updateCanvasNav()
+      // Highlight anchored message
+      document.querySelectorAll('.message.anchored').forEach(m => m.classList.remove('anchored'))
+      if (page.msgEl) {
+        page.msgEl.classList.add('anchored')
+        page.msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+    }
+
+    function pushCanvasPage(components, msgEl) {
+      canvasPages.push({ components, msgEl })
+      showCanvasPage(canvasPages.length - 1)
+      // Make message clickable to jump to its canvas
+      if (msgEl) {
+        const pageIdx = canvasPages.length - 1
+        msgEl.style.cursor = 'pointer'
+        msgEl.addEventListener('click', () => showCanvasPage(pageIdx))
+      }
+    }
+
+    $('canvasPrev').addEventListener('click', () => showCanvasPage(canvasIndex - 1))
+    $('canvasNext').addEventListener('click', () => showCanvasPage(canvasIndex + 1))
+
+    // ── Canvas Rendering ──
     function stripCanvasAnnotations(text) {
       let result = text.replace(/<!--canvas:\S+\s+[\s\S]*?-->/g, '')
       const idx = result.indexOf('<!--canvas:')
@@ -555,9 +627,13 @@ It explores how language shapes perception — really thought-provoking."`
       const old = canvas.querySelector('.canvas-content')
       if (old) old.remove()
       $('presence').classList.remove('hidden')
+      canvasPages.length = 0
+      canvasIndex = -1
+      updateCanvasNav()
+      document.querySelectorAll('.message.anchored').forEach(m => m.classList.remove('anchored'))
     }
 
-    function renderCanvas(components) {
+    function renderCanvasContent(components) {
       const canvas = $('canvas')
       const presence = $('presence')
 
@@ -725,7 +801,7 @@ It explores how language shapes perception — really thought-provoking."`
 
             // Live canvas update on complete annotations
             const components = parseCanvasAnnotations(streamedText)
-            if (components.length > 0) renderCanvas(components)
+            if (components.length > 0) renderCanvasContent(components)
           } else if (event === 'warning') {
             console.warn('[Loop]', data.message)
           }
@@ -750,9 +826,9 @@ It explores how language shapes perception — really thought-provoking."`
           msgEl.remove()
         }
 
-        // Final canvas render
+        // Final canvas render — push to history
         const components = parseCanvasAnnotations(fullText)
-        if (components.length > 0) renderCanvas(components)
+        if (components.length > 0) pushCanvasPage(components, msgEl)
 
       } catch (err) {
         removeTyping()

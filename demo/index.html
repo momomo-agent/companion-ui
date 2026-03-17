@@ -347,7 +347,7 @@
             <div class="tool-chip" data-tool="code">💻 Code</div>
           </div>
         </div>
-        <div style="font-size:10px;color:#333;margin-top:8px">Auto-saved · Powered by agentic-core</div>
+        <div style="font-size:10px;color:#333;margin-top:8px">Auto-saved · Powered by agentic-claw</div>
       </div>
     </div>
 
@@ -363,6 +363,8 @@
     <div class="presence" id="presence">∞</div>
   </div>
 
+  <script src="./memory.js"></script>
+  <script src="./claw.js"></script>
   <script type="module">
     import { agenticAsk } from './agentic-agent.js'
 
@@ -403,7 +405,30 @@ Example:
 <!--canvas:movie-card {"title":"Arrival","year":2016,"rating":7.9,"tagline":"A linguist is recruited to help communicate with aliens who have arrived on Earth.","genre":"Sci-Fi / Drama","director":"Denis Villeneuve"}-->
 It explores how language shapes perception — really thought-provoking."`
 
-    let conversationHistory = []
+    // Make agenticAsk available globally for claw
+    globalThis.agenticAsk = agenticAsk
+
+    // ── Claw instance (lazy init) ──
+    let claw = null
+
+    function ensureClaw(config) {
+      // Recreate if config changed
+      const key = JSON.stringify([config.provider, config.apiKey, config.baseUrl, config.model, config.proxyUrl])
+      if (claw && claw._configKey === key) return claw
+      if (claw) claw.destroy()
+      claw = AgenticClaw.createClaw({
+        apiKey: config.apiKey,
+        provider: config.provider || 'anthropic',
+        baseUrl: config.baseUrl || undefined,
+        model: config.model || undefined,
+        proxyUrl: config.proxyUrl || undefined,
+        systemPrompt: SYSTEM_PROMPT,
+        maxTokens: 8000,
+        stream: true,
+      })
+      claw._configKey = key
+      return claw
+    }
 
     function loadConfig() {
       try {
@@ -451,7 +476,7 @@ It explores how language shapes perception — really thought-provoking."`
     $('gearBtn').addEventListener('click', () => $('configPanel').classList.toggle('open'))
 
     $('clearBtn').addEventListener('click', () => {
-      conversationHistory = []
+      if (claw) { claw.memory.clear(); claw = null }
       $('messages').innerHTML = ''
       resetCanvas()
     })
@@ -645,7 +670,7 @@ It explores how language shapes perception — really thought-provoking."`
       canvas.appendChild(container)
     }
 
-    // ── Send (powered by agentic-core) ──
+    // ── Send (powered by agentic-claw) ──
     async function send() {
       const input = $('input')
       const btn = $('sendBtn')
@@ -670,11 +695,12 @@ It explores how language shapes perception — really thought-provoking."`
       let streamedText = ''
 
       try {
-        const result = await agenticAsk(prompt, {
-          ...config,
-          history: conversationHistory,
-          system: SYSTEM_PROMPT,
-        }, (event, data) => {
+        const agent = ensureClaw(config)
+        const chatOpts = {
+          tools: config.tools || [],
+          searchApiKey: config.searchApiKey || undefined,
+        }
+        const result = await agent.chat(prompt, chatOpts, (event, data) => {
           if (event === 'status') {
             // Round status — keep typing indicator
           } else if (event === 'tool') {
@@ -705,11 +731,7 @@ It explores how language shapes perception — really thought-provoking."`
 
         const fullText = result.answer || ''
 
-        // Store in conversation history
-        conversationHistory.push(
-          { role: 'user', content: prompt },
-          { role: 'assistant', content: fullText }
-        )
+        // claw auto-stores conversation history — no manual push needed
 
         // Final clean render
         const finalClean = stripCanvasAnnotations(fullText)

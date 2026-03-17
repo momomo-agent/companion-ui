@@ -599,6 +599,7 @@ It explores how language shapes perception — really thought-provoking."`
         switch (type) {
           case 'movie-card':
             card.innerHTML = `
+              ${data.poster ? `<img src="${esc(data.poster)}" style="width:100%;border-radius:6px;margin-bottom:10px" loading="lazy">` : ''}
               <h2>${esc(data.title)}</h2>
               <div class="meta-row">
                 <span class="year">${data.year || ''}</span>
@@ -675,6 +676,12 @@ It explores how language shapes perception — really thought-provoking."`
             card.innerHTML = `<div class="image-grid">${(data.images||[]).map(url =>
               `<img src="${esc(url)}" loading="lazy" />`
             ).join('')}</div>`
+            break
+
+          case 'image-card':
+            card.innerHTML = `
+              ${data.url ? `<img src="${esc(data.url)}" style="width:100%;border-radius:6px" loading="lazy">` : ''}
+              ${data.caption ? `<div style="color:#666;font-size:12px;margin-top:6px">${esc(data.caption)}</div>` : ''}`
             break
 
           default:

@@ -372,24 +372,23 @@ async function callLLM(url, apiKey, body, proxyUrl, isAnthropic = false) {
   }
   
   if (proxyUrl) {
+    // Transparent proxy — pass config via headers, body goes through directly
+    const proxyHeaders = {
+      ...headers,
+      'x-base-url': url.replace(/\/v1\/.*$/, ''),
+      'x-provider': isAnthropic ? 'anthropic' : 'openai',
+      'x-api-key': apiKey,
+    }
     const response = await fetch(proxyUrl, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ url, method: 'POST', headers, body: JSON.stringify(body), mode: 'raw' })
+      headers: proxyHeaders,
+      body: JSON.stringify(body),
     })
-    const result = await response.json()
-    if (!result.success) {
-      const errMsg = typeof result.error === 'string' ? result.error : JSON.stringify(result.error)
-      throw new Error(errMsg || `Proxy failed: ${result.status}`)
+    if (!response.ok) {
+      const text = await response.text()
+      throw new Error(`API error ${response.status}: ${text.slice(0, 300)}`)
     }
-    const rawBody = typeof result.body === 'string' ? result.body : JSON.stringify(result.body)
-    if (result.status >= 400) throw new Error(`API error ${result.status}: ${rawBody.slice(0, 300)}`)
-    try {
-      if (rawBody.trimStart().startsWith('data: ')) return reassembleSSE(rawBody)
-      return JSON.parse(rawBody)
-    } catch (e) {
-      throw new Error(`Response parse error: ${e.message}. Body starts with: ${rawBody.slice(0, 100)}`)
-    }
+    return await response.json()
   } else {
     const response = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) })
     if (!response.ok) {

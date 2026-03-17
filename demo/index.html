@@ -213,90 +213,74 @@
       to { opacity: 0; transform: translateY(-10px) scale(0.98); }
     }
 
-    /* movie-card */
-    .movie-card h2 { color: #e8856a; margin-bottom: 4px; font-size: 20px; font-weight: 600; letter-spacing: -0.4px; }
-    .movie-card .meta-row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
-    .movie-card .year { color: #666; font-size: 13px; }
-    .movie-card .rating { color: #e0a86e; font-size: 13px; }
-    .movie-card .genre { color: #555; font-size: 12px; background: rgba(255,255,255,0.04); padding: 2px 8px; border-radius: 4px; }
-    .movie-card .tagline { color: #999; font-size: 14px; line-height: 1.6; }
-    .movie-card .director { color: #555; font-size: 12px; margin-top: 10px; }
+    /* ── card: universal content block ── */
+    .card h2 { color: #e8856a; margin-bottom: 4px; font-size: 20px; font-weight: 600; letter-spacing: -0.4px; }
+    .card-img { width: 100%; border-radius: 6px; margin-bottom: 10px; }
+    .card-sub { color: #777; font-size: 13px; margin-bottom: 8px; }
+    .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .card-tag { color: #555; font-size: 11px; background: rgba(255,255,255,0.04); padding: 2px 8px; border-radius: 4px; }
+    .card-footer { color: #555; font-size: 12px; margin-top: 10px; }
+    .card h3 { color: #e8856a; margin-bottom: 12px; font-size: 15px; font-weight: 500; }
+    .list-item { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.03); display: flex; flex-direction: column; gap: 2px; }
+    .list-item:last-child { border-bottom: none; }
+    .item-title { color: #ccc; font-size: 13px; }
+    .item-detail { color: #666; font-size: 12px; line-height: 1.5; }
 
-    /* progress-card */
-    .progress-card h3 { color: #e8856a; margin-bottom: 14px; font-size: 15px; font-weight: 500; }
-    .progress-bar { background: #151515; height: 5px; border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+    /* ── progress ── */
+    .progress-bar { background: #151515; height: 5px; border-radius: 3px; overflow: hidden; margin: 8px 0 6px; }
     .progress-fill { background: linear-gradient(90deg, #e8856a, #e0a86e); height: 100%; border-radius: 3px; transition: width 0.8s cubic-bezier(.23,1,.32,1); }
-    .progress-meta { color: #666; font-size: 12px; }
 
-    /* text-highlight */
-    .text-highlight { font-size: 22px; color: #e8856a; text-align: center; line-height: 1.5; font-weight: 300; letter-spacing: -0.3px; padding: 8px 0; }
+    /* ── metric ── */
+    .metric { text-align: center; }
+    .stat-value { font-size: 36px; font-weight: 300; color: #e8856a; letter-spacing: -1px; }
+    .stat-unit { font-size: 16px; color: #666; margin-left: 2px; }
+    .stat-label { color: #666; font-size: 12px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-change { color: #4ade80; font-size: 12px; margin-top: 2px; }
+    .stat-change.negative { color: #ef4444; }
 
-    /* code-block */
-    .code-block pre { background: #0e0e0e; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; color: #bbb; }
-
-    /* list-card */
-    .list-card h3 { color: #e8856a; margin-bottom: 12px; font-size: 15px; font-weight: 500; }
-    .list-card .list-item {
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.03);
-      display: flex; flex-direction: column; gap: 2px;
-    }
-    .list-card .list-item:last-child { border-bottom: none; }
-    .list-card .item-title { color: #ccc; font-size: 13px; }
-    .list-card .item-detail { color: #666; font-size: 12px; line-height: 1.5; }
-
-    /* timeline-card */
-    .timeline-card h3 { color: #e8856a; margin-bottom: 14px; font-size: 15px; font-weight: 500; }
-    .timeline-item {
-      position: relative; padding-left: 20px; padding-bottom: 14px;
-      border-left: 1px solid rgba(232,133,106,0.15);
-    }
+    /* ── steps ── */
+    .steps h3 { color: #e8856a; margin-bottom: 14px; font-size: 15px; font-weight: 500; }
+    .timeline-item { position: relative; padding-left: 20px; padding-bottom: 14px; border-left: 1px solid rgba(232,133,106,0.15); }
     .timeline-item:last-child { border-left-color: transparent; padding-bottom: 0; }
-    .timeline-item::before {
-      content: ''; position: absolute; left: -3px; top: 4px;
-      width: 5px; height: 5px; border-radius: 50%;
-      background: #e8856a;
-    }
+    .timeline-item::before { content: ''; position: absolute; left: -3px; top: 4px; width: 5px; height: 5px; border-radius: 50%; background: #e8856a; }
     .timeline-item .tl-time { color: #555; font-size: 11px; margin-bottom: 2px; }
     .timeline-item .tl-title { color: #ccc; font-size: 13px; }
     .timeline-item .tl-desc { color: #666; font-size: 12px; margin-top: 2px; }
 
-    /* compare-card */
-    .compare-card h3 { color: #e8856a; margin-bottom: 14px; font-size: 15px; font-weight: 500; }
-    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    /* ── columns ── */
+    .columns h3 { color: #e8856a; margin-bottom: 14px; font-size: 15px; font-weight: 500; }
+    .compare-grid { display: grid; gap: 12px; }
     .compare-col h4 { color: #ccc; font-size: 13px; font-weight: 500; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); }
     .compare-col .compare-item { color: #888; font-size: 12px; padding: 3px 0; }
 
-    /* stat-card */
-    .stat-card { text-align: center; }
-    .stat-card .stat-value { font-size: 36px; font-weight: 300; color: #e8856a; letter-spacing: -1px; }
-    .stat-card .stat-label { color: #666; font-size: 12px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .stat-card .stat-change { color: #4ade80; font-size: 12px; margin-top: 2px; }
-    .stat-card .stat-change.negative { color: #ef4444; }
+    /* ── callout ── */
+    .callout .text-highlight { font-size: 22px; color: #e8856a; text-align: center; line-height: 1.5; font-weight: 300; letter-spacing: -0.3px; padding: 8px 0; }
+    .callout .quote-text { color: #ccc; font-size: 16px; line-height: 1.6; font-style: italic; font-weight: 300; }
+    .callout .quote-author { color: #666; font-size: 12px; margin-top: 10px; }
 
-    /* quote-card */
-    .quote-card .quote-text { color: #ccc; font-size: 16px; line-height: 1.6; font-style: italic; font-weight: 300; }
-    .quote-card .quote-author { color: #666; font-size: 12px; margin-top: 10px; }
+    /* ── code ── */
+    .code pre { background: #0e0e0e; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; color: #bbb; }
 
-    /* markdown-card */
-    .markdown-card .md-body { font-size: 14px; line-height: 1.7; color: #aaa; }
-    .markdown-card .md-body h1,.markdown-card .md-body h2,.markdown-card .md-body h3 { color: #ddd; margin: 12px 0 6px; }
-    .markdown-card .md-body h1 { font-size: 18px; } .markdown-card .md-body h2 { font-size: 16px; } .markdown-card .md-body h3 { font-size: 14px; }
-    .markdown-card .md-body p { margin-bottom: 8px; }
-    .markdown-card .md-body ul,.markdown-card .md-body ol { padding-left: 18px; margin-bottom: 8px; }
-    .markdown-card .md-body code { background: #151515; padding: 1px 5px; border-radius: 3px; font-size: 13px; }
-    .markdown-card .md-body pre { background: #0e0e0e; padding: 12px; border-radius: 6px; overflow-x: auto; margin: 8px 0; }
-    .markdown-card .md-body pre code { background: none; padding: 0; }
-    .markdown-card .md-body blockquote { border-left: 2px solid #333; padding-left: 10px; color: #777; margin: 8px 0; }
-    .markdown-card .md-body a { color: #e8856a; }
-    .markdown-card .md-body strong { color: #ddd; }
-    .markdown-card .md-body table { border-collapse: collapse; width: 100%; margin: 8px 0; }
-    .markdown-card .md-body th,.markdown-card .md-body td { border: 1px solid #222; padding: 6px 10px; font-size: 12px; }
-    .markdown-card .md-body th { background: #151515; color: #bbb; }
+    /* ── markdown ── */
+    .markdown .md-body { font-size: 14px; line-height: 1.7; color: #aaa; }
+    .markdown .md-body h1,.markdown .md-body h2,.markdown .md-body h3 { color: #ddd; margin: 12px 0 6px; }
+    .markdown .md-body h1 { font-size: 18px; } .markdown .md-body h2 { font-size: 16px; } .markdown .md-body h3 { font-size: 14px; }
+    .markdown .md-body p { margin-bottom: 8px; }
+    .markdown .md-body ul,.markdown .md-body ol { padding-left: 18px; margin-bottom: 8px; }
+    .markdown .md-body code { background: #151515; padding: 1px 5px; border-radius: 3px; font-size: 13px; }
+    .markdown .md-body pre { background: #0e0e0e; padding: 12px; border-radius: 6px; overflow-x: auto; margin: 8px 0; }
+    .markdown .md-body pre code { background: none; padding: 0; }
+    .markdown .md-body blockquote { border-left: 2px solid #333; padding-left: 10px; color: #777; margin: 8px 0; }
+    .markdown .md-body a { color: #e8856a; }
+    .markdown .md-body strong { color: #ddd; }
+    .markdown .md-body table { border-collapse: collapse; width: 100%; margin: 8px 0; }
+    .markdown .md-body th,.markdown .md-body td { border: 1px solid #222; padding: 6px 10px; font-size: 12px; }
+    .markdown .md-body th { background: #151515; color: #bbb; }
 
-    /* image-grid */
-    .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
-    .image-grid img { width: 100%; border-radius: 8px; object-fit: cover; aspect-ratio: 16/10; background: #151515; }
+    /* ── media ── */
+    .media .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+    .media .image-grid img, .media .card-img { width: 100%; border-radius: 8px; object-fit: cover; background: #151515; }
+    .media .image-grid img { aspect-ratio: 16/10; }
 
     /* Responsive */
     @media (max-width: 768px) {
@@ -392,18 +376,14 @@ When your response benefits from visual representation, include canvas annotatio
 Format: <!--canvas:TYPE JSON-->
 
 Available types:
-- movie-card: {"title":"Name","year":2020,"rating":8.5,"tagline":"Brief description","genre":"Sci-Fi","director":"Name","poster":"https://image-url"}
-- progress-card: {"title":"Task","progress":75,"status":"In progress"}
-- text-highlight: {"text":"An important quote or key insight"}
-- code-block: {"code":"console.log('hi')","language":"javascript"}
-- list-card: {"title":"Title","items":[{"title":"Item","detail":"Description text that can be longer"}]}
-- timeline-card: {"title":"Title","events":[{"time":"2020","title":"Event","description":"Details"}]}
-- compare-card: {"title":"A vs B","left":{"name":"Option A","items":["Pro 1","Pro 2"]},"right":{"name":"Option B","items":["Pro 1","Pro 2"]}}
-- stat-card: {"value":"42%","label":"Conversion Rate","change":"+5.2%"}
-- quote-card: {"text":"The quote text","author":"Author Name","source":"Book Title"}
-- markdown-card: {"content":"# Full Markdown\\n\\nWith **rich** formatting, tables, lists..."}
-- image-card: {"url":"https://image-url","caption":"Optional description"}
-- image-grid: {"images":["url1","url2"]}
+- card: {"title":"Title","subtitle":"Secondary text","image":"url","tags":["Tag1","Tag2"],"items":[{"title":"Item","detail":"Description"}],"progress":75,"footer":"Note"}
+- metric: {"value":"42%","label":"Conversion Rate","change":"+5.2%","unit":"%"}
+- steps: {"title":"Timeline","items":[{"time":"2020","title":"Event","detail":"Details"}]}
+- columns: {"title":"A vs B","cols":[{"name":"Option A","items":["Point 1"]},{"name":"Option B","items":["Point 1"]}]}
+- callout: {"text":"Important insight or quote","author":"Author","source":"Source"}
+- code: {"code":"console.log('hi')","language":"javascript"}
+- markdown: {"content":"# Rich text\\n\\nWith **formatting**, tables, lists..."}
+- media: {"url":"single-image-url","caption":"Description"} or {"images":["url1","url2"]}
 
 Guidelines:
 - Use canvas when visuals genuinely add value. Pure text answers need no annotation.
@@ -417,7 +397,7 @@ Guidelines:
 
 Example:
 "Here's a great sci-fi film:
-<!--canvas:movie-card {"title":"Arrival","year":2016,"rating":7.9,"tagline":"A linguist is recruited to help communicate with aliens who have arrived on Earth.","genre":"Sci-Fi / Drama","director":"Denis Villeneuve"}-->
+<!--canvas:card {"title":"Arrival","subtitle":"2016 · ★ 7.9 · Sci-Fi","image":"https://image.tmdb.org/t/p/w500/xxx.jpg","tags":["Denis Villeneuve","Amy Adams"],"footer":"A linguist recruited to communicate with aliens who have arrived on Earth."}-->
 It explores how language shapes perception — really thought-provoking."`
 
     // Make agenticAsk available globally for claw
@@ -604,91 +584,90 @@ It explores how language shapes perception — really thought-provoking."`
         card.style.animationDelay = `${i * 0.08}s`
 
         switch (type) {
-          case 'movie-card':
+          // ── card: universal content block ──
+          // {title, subtitle, image, items[], tags[], progress, footer}
+          case 'card':
             card.innerHTML = `
-              ${data.poster ? `<img src="${esc(data.poster)}" style="width:100%;border-radius:6px;margin-bottom:10px" loading="lazy">` : ''}
-              <h2>${esc(data.title)}</h2>
-              <div class="meta-row">
-                <span class="year">${data.year || ''}</span>
-                ${data.rating ? `<span class="rating">★ ${data.rating}</span>` : ''}
-                ${data.genre ? `<span class="genre">${esc(data.genre)}</span>` : ''}
-              </div>
-              <div class="tagline">${esc(data.tagline || '')}</div>
-              ${data.director ? `<div class="director">Dir. ${esc(data.director)}</div>` : ''}`
+              ${data.image ? `<img src="${esc(data.image)}" class="card-img" loading="lazy">` : ''}
+              ${data.title ? `<h2>${esc(data.title)}</h2>` : ''}
+              ${data.subtitle ? `<div class="card-sub">${esc(data.subtitle)}</div>` : ''}
+              ${(data.tags||[]).length ? `<div class="card-tags">${data.tags.map(t => `<span class="card-tag">${esc(t)}</span>`).join('')}</div>` : ''}
+              ${data.progress != null ? `<div class="progress-bar"><div class="progress-fill" style="width:${data.progress}%"></div></div>` : ''}
+              ${(data.items||[]).length ? data.items.map(it =>
+                typeof it === 'string'
+                  ? `<div class="list-item">${esc(it)}</div>`
+                  : `<div class="list-item"><span class="item-title">${esc(it.title||'')}</span><span class="item-detail">${esc(it.detail||'')}</span></div>`
+              ).join('') : ''}
+              ${data.footer ? `<div class="card-footer">${esc(data.footer)}</div>` : ''}`
             break
 
-          case 'progress-card':
+          // ── metric: number + label + trend ──
+          // {value, label, change, unit}
+          case 'metric':
             card.innerHTML = `
-              <h3>${esc(data.title)}</h3>
-              <div class="progress-bar"><div class="progress-fill" style="width:${data.progress||0}%"></div></div>
-              <div class="progress-meta">${esc(data.status||'')} ${data.progress?data.progress+'%':''}</div>`
+              <div class="stat-value">${esc(String(data.value))}${data.unit ? `<span class="stat-unit">${esc(data.unit)}</span>` : ''}</div>
+              <div class="stat-label">${esc(data.label||'')}</div>
+              ${data.change ? `<div class="stat-change${String(data.change).startsWith('-')?' negative':''}">${esc(String(data.change))}</div>` : ''}`
             break
 
-          case 'text-highlight':
-            card.innerHTML = `<div class="text-highlight">${esc(data.text)}</div>`
+          // ── steps: ordered sequence ──
+          // {title, items: [{time, title, detail}]}
+          case 'steps':
+            card.innerHTML = `${data.title ? `<h3>${esc(data.title)}</h3>` : ''}${(data.items||[]).map(ev =>
+              `<div class="timeline-item">
+                ${ev.time ? `<div class="tl-time">${esc(ev.time)}</div>` : ''}
+                <div class="tl-title">${esc(ev.title||'')}</div>
+                ${ev.detail ? `<div class="tl-desc">${esc(ev.detail)}</div>` : ''}
+              </div>`
+            ).join('')}`
             break
 
-          case 'code-block':
+          // ── columns: side-by-side content ──
+          // {title, cols: [{name, items[]}]}
+          case 'columns':
+            const cols = data.cols || [data.left, data.right].filter(Boolean)
+            card.innerHTML = `${data.title ? `<h3>${esc(data.title)}</h3>` : ''}
+              <div class="compare-grid" style="grid-template-columns:repeat(${cols.length},1fr)">
+                ${cols.map(col => `<div class="compare-col">
+                  ${col.name ? `<h4>${esc(col.name)}</h4>` : ''}
+                  ${(col.items||[]).map(it => `<div class="compare-item">${esc(it)}</div>`).join('')}
+                </div>`).join('')}
+              </div>`
+            break
+
+          // ── callout: emphasized content ──
+          // {text, author, source, style}
+          case 'callout':
+            const isQuote = data.author || data.source
+            card.innerHTML = isQuote
+              ? `<div class="quote-text">"${esc(data.text)}"</div>
+                 <div class="quote-author">${esc(data.author||'')}${data.source ? ` — ${esc(data.source)}` : ''}</div>`
+              : `<div class="text-highlight">${esc(data.text)}</div>`
+            break
+
+          // ── code: syntax block ──
+          // {code, language}
+          case 'code':
             card.innerHTML = `<div class="code-block"><pre><code>${esc(data.code||'')}</code></pre></div>`
             break
 
-          case 'list-card':
-            card.innerHTML = `<h3>${esc(data.title)}</h3>${(data.items||[]).map(it =>
-              `<div class="list-item"><span class="item-title">${esc(it.title)}</span><span class="item-detail">${esc(it.detail||'')}</span></div>`
-            ).join('')}`
-            break
-
-          case 'timeline-card':
-            card.innerHTML = `<h3>${esc(data.title)}</h3>${(data.events||[]).map(ev =>
-              `<div class="timeline-item">
-                ${ev.time ? `<div class="tl-time">${esc(ev.time)}</div>` : ''}
-                <div class="tl-title">${esc(ev.title)}</div>
-                ${ev.description ? `<div class="tl-desc">${esc(ev.description)}</div>` : ''}
-              </div>`
-            ).join('')}`
-            break
-
-          case 'compare-card':
-            card.innerHTML = `<h3>${esc(data.title)}</h3>
-              <div class="compare-grid">
-                <div class="compare-col">
-                  <h4>${esc(data.left?.name||'A')}</h4>
-                  ${(data.left?.items||[]).map(it => `<div class="compare-item">${esc(it)}</div>`).join('')}
-                </div>
-                <div class="compare-col">
-                  <h4>${esc(data.right?.name||'B')}</h4>
-                  ${(data.right?.items||[]).map(it => `<div class="compare-item">${esc(it)}</div>`).join('')}
-                </div>
-              </div>`
-            break
-
-          case 'stat-card':
-            card.innerHTML = `
-              <div class="stat-value">${esc(data.value)}</div>
-              <div class="stat-label">${esc(data.label||'')}</div>
-              ${data.change ? `<div class="stat-change${data.change.startsWith('-')?' negative':''}">${esc(data.change)}</div>` : ''}`
-            break
-
-          case 'quote-card':
-            card.innerHTML = `
-              <div class="quote-text">"${esc(data.text)}"</div>
-              <div class="quote-author">${esc(data.author||'')}${data.source ? ` — ${esc(data.source)}` : ''}</div>`
-            break
-
-          case 'markdown-card':
+          // ── markdown: rich text ──
+          // {content}
+          case 'markdown':
             card.innerHTML = `<div class="md-body">${marked.parse(data.content||'')}</div>`
             break
 
-          case 'image-grid':
-            card.innerHTML = `<div class="image-grid">${(data.images||[]).map(url =>
-              `<img src="${esc(url)}" loading="lazy" />`
-            ).join('')}</div>`
-            break
-
-          case 'image-card':
-            card.innerHTML = `
-              ${data.url ? `<img src="${esc(data.url)}" style="width:100%;border-radius:6px" loading="lazy">` : ''}
-              ${data.caption ? `<div style="color:#666;font-size:12px;margin-top:6px">${esc(data.caption)}</div>` : ''}`
+          // ── media: images ──
+          // {url, caption} or {images: []}
+          case 'media':
+            if (data.images?.length) {
+              card.innerHTML = `<div class="image-grid">${data.images.map(url =>
+                `<img src="${esc(typeof url === 'string' ? url : url.url)}" loading="lazy" />`
+              ).join('')}${data.caption ? `<div class="card-footer">${esc(data.caption)}</div>` : ''}</div>`
+            } else if (data.url) {
+              card.innerHTML = `<img src="${esc(data.url)}" class="card-img" loading="lazy">
+                ${data.caption ? `<div class="card-footer">${esc(data.caption)}</div>` : ''}`
+            }
             break
 
           default:

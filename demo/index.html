@@ -338,9 +338,11 @@
           <input id="model" placeholder="claude-sonnet-4-20250514">
         </div>
         <div class="field">
-          <label>Proxy URL <span class="hint">(optional)</span></label>
-          <input id="proxyUrl" placeholder="/api/proxy">
-          <div style="color:#666;font-size:11px;margin-top:4px">Default: /api/proxy (Vercel edge). Or use proxy.link2web.site/proxy</div>
+          <label>
+            <input type="checkbox" id="proxyEnabled" style="margin-right:6px;vertical-align:middle">
+            Proxy
+          </label>
+          <input id="proxyUrl" placeholder="https://proxy.link2web.site/proxy" style="margin-top:4px" disabled>
         </div>
         <div class="field">
           <label>Search API Key <span class="hint">(Tavily)</span></label>
@@ -445,6 +447,8 @@ It explores how language shapes perception — really thought-provoking."`
         if (s.model) $('model').value = s.model
         if (s.searchApiKey) $('searchApiKey').value = s.searchApiKey
         if (s.proxyUrl) $('proxyUrl').value = s.proxyUrl
+        $('proxyEnabled').checked = !!s.proxyEnabled
+        $('proxyUrl').disabled = !s.proxyEnabled
       } catch {}
     }
 
@@ -456,11 +460,13 @@ It explores how language shapes perception — really thought-provoking."`
         model: $('model').value,
         searchApiKey: $('searchApiKey').value,
         proxyUrl: $('proxyUrl').value,
+        proxyEnabled: $('proxyEnabled').checked,
       }))
     }
 
     function getConfig() {
       const activeTools = [...document.querySelectorAll('.tool-chip.active')].map(c => c.dataset.tool)
+      const proxyEnabled = $('proxyEnabled').checked
       return {
         provider: $('provider').value || 'anthropic',
         baseUrl: $('baseUrl').value.trim() || undefined,
@@ -469,15 +475,18 @@ It explores how language shapes perception — really thought-provoking."`
         searchApiKey: $('searchApiKey').value.trim() || undefined,
         tools: activeTools,
         stream: true,
-        proxyUrl: $('proxyUrl').value.trim() || '/api/proxy',
+        proxyUrl: proxyEnabled ? ($('proxyUrl').value.trim() || 'https://proxy.link2web.site/proxy') : undefined,
       }
     }
 
     const $ = id => document.getElementById(id)
 
     loadConfig()
-    document.querySelectorAll('#provider,#apiKey,#baseUrl,#model,#searchApiKey,#proxyUrl').forEach(el => {
-      el.addEventListener('input', saveConfig)
+    document.querySelectorAll('#provider,#apiKey,#baseUrl,#model,#searchApiKey,#proxyUrl,#proxyEnabled').forEach(el => {
+      el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', saveConfig)
+    })
+    $('proxyEnabled').addEventListener('change', () => {
+      $('proxyUrl').disabled = !$('proxyEnabled').checked
     })
 
     // ── UI Events ──

@@ -338,6 +338,11 @@
           <input id="model" placeholder="claude-sonnet-4-20250514">
         </div>
         <div class="field">
+          <label>Proxy URL <span class="hint">(optional)</span></label>
+          <input id="proxyUrl" placeholder="/api/proxy">
+          <div style="color:#666;font-size:11px;margin-top:4px">Default: /api/proxy (Vercel edge). Or use proxy.link2web.site/proxy</div>
+        </div>
+        <div class="field">
           <label>Search API Key <span class="hint">(Tavily)</span></label>
           <input type="text" id="searchApiKey" placeholder="tvly-...">
         </div>
@@ -439,6 +444,7 @@ It explores how language shapes perception — really thought-provoking."`
         if (s.baseUrl) $('baseUrl').value = s.baseUrl
         if (s.model) $('model').value = s.model
         if (s.searchApiKey) $('searchApiKey').value = s.searchApiKey
+        if (s.proxyUrl) $('proxyUrl').value = s.proxyUrl
       } catch {}
     }
 
@@ -449,6 +455,7 @@ It explores how language shapes perception — really thought-provoking."`
         baseUrl: $('baseUrl').value,
         model: $('model').value,
         searchApiKey: $('searchApiKey').value,
+        proxyUrl: $('proxyUrl').value,
       }))
     }
 
@@ -462,14 +469,14 @@ It explores how language shapes perception — really thought-provoking."`
         searchApiKey: $('searchApiKey').value.trim() || undefined,
         tools: activeTools,
         stream: true,
-        proxyUrl: '/api/proxy',
+        proxyUrl: $('proxyUrl').value.trim() || '/api/proxy',
       }
     }
 
     const $ = id => document.getElementById(id)
 
     loadConfig()
-    document.querySelectorAll('#provider,#apiKey,#baseUrl,#model,#searchApiKey').forEach(el => {
+    document.querySelectorAll('#provider,#apiKey,#baseUrl,#model,#searchApiKey,#proxyUrl').forEach(el => {
       el.addEventListener('input', saveConfig)
     })
 

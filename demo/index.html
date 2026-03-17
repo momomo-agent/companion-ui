@@ -43,21 +43,22 @@
     /* Config */
     .config-panel {
       max-height: 0; overflow: hidden;
-      transition: max-height 0.3s ease;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      background: #0a0a0a;
+      transition: max-height 0.35s ease;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
     }
-    .config-panel.open { max-height: 400px; overflow-y: auto; }
-    .config-content { padding: 14px 20px; }
-    .field { margin-bottom: 10px; }
+    .config-panel.open { max-height: 600px; overflow: visible; }
+    .config-content { padding: 16px 20px 12px; }
+    .config-row { display: flex; gap: 10px; margin-bottom: 8px; }
+    .config-row .field { flex: 1; margin-bottom: 0; }
+    .field { margin-bottom: 8px; }
     .field label {
-      font-size: 10px; color: #555; display: block;
+      font-size: 10px; color: #444; display: block;
       margin-bottom: 3px; text-transform: uppercase;
       letter-spacing: 0.5px; font-weight: 500;
     }
-    .field label .hint { color: #3a3a3a; }
+    .field label .hint { color: #333; font-weight: 400; }
     input, select {
-      background: #111; border: 1px solid #1a1a1a; border-radius: 6px;
+      background: #0e0e0e; border: 1px solid #1a1a1a; border-radius: 6px;
       color: #bbb; padding: 7px 10px; font-size: 12px; width: 100%;
       outline: none; transition: border-color 0.2s;
     }
@@ -317,45 +318,50 @@
 
     <div class="config-panel" id="configPanel">
       <div class="config-content">
-        <div class="field">
-          <label>Provider</label>
-          <select id="provider">
-            <option value="anthropic">Anthropic</option>
-            <option value="openai">OpenAI</option>
-          </select>
+        <div class="config-row">
+          <div class="field">
+            <label>Provider</label>
+            <select id="provider">
+              <option value="anthropic">Anthropic</option>
+              <option value="openai">OpenAI</option>
+            </select>
+          </div>
+          <div class="field" style="flex:2">
+            <label>API Key</label>
+            <input type="text" id="apiKey" placeholder="sk-ant-... or sk-...">
+          </div>
         </div>
-        <div class="field">
-          <label>API Key</label>
-          <input type="text" id="apiKey" placeholder="sk-ant-... or sk-...">
+        <div class="config-row">
+          <div class="field" style="flex:2">
+            <label>Base URL <span class="hint">(optional)</span></label>
+            <input id="baseUrl" placeholder="https://api.anthropic.com">
+          </div>
+          <div class="field">
+            <label>Model <span class="hint">(optional)</span></label>
+            <input id="model" placeholder="claude-sonnet-4">
+          </div>
         </div>
-        <div class="field">
-          <label>Base URL <span class="hint">(optional)</span></label>
-          <input id="baseUrl" placeholder="https://api.anthropic.com">
-          <div style="color:#666;font-size:11px;margin-top:4px">OpenAI-compatible APIs (e.g. subrouter.ai) require Provider = OpenAI</div>
+        <div class="config-row">
+          <div class="field" style="flex:2">
+            <label>
+              <input type="checkbox" id="proxyEnabled" style="margin-right:4px;vertical-align:middle;accent-color:#e8856a">
+              Proxy
+            </label>
+            <input id="proxyUrl" placeholder="https://proxy.link2web.site/proxy" disabled>
+          </div>
+          <div class="field">
+            <label>Search Key <span class="hint">(Tavily)</span></label>
+            <input type="text" id="searchApiKey" placeholder="tvly-...">
+          </div>
         </div>
-        <div class="field">
-          <label>Model <span class="hint">(optional)</span></label>
-          <input id="model" placeholder="claude-sonnet-4-20250514">
-        </div>
-        <div class="field">
-          <label>
-            <input type="checkbox" id="proxyEnabled" style="margin-right:6px;vertical-align:middle">
-            Proxy
-          </label>
-          <input id="proxyUrl" placeholder="https://proxy.link2web.site/proxy" style="margin-top:4px" disabled>
-        </div>
-        <div class="field">
-          <label>Search API Key <span class="hint">(Tavily)</span></label>
-          <input type="text" id="searchApiKey" placeholder="tvly-...">
-        </div>
-        <div style="margin-top:6px">
-          <label style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.5px;font-weight:500">Tools</label>
-          <div class="tools-row" style="margin-top:4px">
+        <div style="display:flex;align-items:center;gap:12px;margin-top:2px">
+          <label style="font-size:10px;color:#444;text-transform:uppercase;letter-spacing:0.5px;font-weight:500;margin:0;white-space:nowrap">Tools</label>
+          <div class="tools-row" style="margin:0">
             <div class="tool-chip active" data-tool="search">🔍 Search</div>
             <div class="tool-chip" data-tool="code">💻 Code</div>
           </div>
+          <div style="font-size:10px;color:#2a2a2a;margin-left:auto;white-space:nowrap">auto-saved</div>
         </div>
-        <div style="font-size:10px;color:#333;margin-top:8px">Auto-saved · Powered by agentic-claw</div>
       </div>
     </div>
 

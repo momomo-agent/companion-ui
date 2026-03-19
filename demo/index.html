@@ -22,16 +22,16 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      background: #080808; color: #d4d4d4;
+      background: #060606; color: #d4d4d4;
       height: 100vh; display: flex; overflow: hidden;
     }
 
     /* ── Chat Panel (left) ── */
     .chat-panel {
-      width: 360px; flex-shrink: 0;
+      width: 380px; flex-shrink: 0;
       display: flex; flex-direction: column;
-      background: #0c0c0c;
-      border-right: 1px solid rgba(255,255,255,0.06);
+      background: #0a0a0a;
+      border-right: 1px solid rgba(255,255,255,0.05);
     }
 
     .chat-header {
@@ -180,12 +180,14 @@
     /* ── Canvas (right) ── */
     .canvas {
       flex: 1; position: relative; overflow: hidden;
-      background: #080808;
+      background: #060606;
+      background-image: radial-gradient(ellipse at 50% 40%, rgba(232,133,106,0.015) 0%, transparent 70%);
     }
     .presence {
       position: absolute; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 56px; opacity: 0.2; color: #e8856a;
+      font-size: 48px; opacity: 0.12; color: #e8856a;
+      font-weight: 200;
       animation: pulse 4s ease-in-out infinite;
       transition: opacity 0.5s;
     }
@@ -225,6 +227,10 @@
       gap: 16px; overflow-y: auto;
       align-items: center;
     }
+    .canvas-content .canvas-card:first-child { margin-top: auto; }
+    .canvas-content .canvas-card:last-child { margin-bottom: auto; }
+    .canvas-content.has-overflow .canvas-card:first-child { margin-top: 0; }
+    .canvas-content.has-overflow .canvas-card:last-child { margin-bottom: 0; }
     .canvas-content::-webkit-scrollbar { width: 4px; }
     .canvas-content::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 2px; }
 
@@ -235,10 +241,15 @@
       border-radius: 14px; padding: 24px 28px;
       backdrop-filter: blur(16px);
       animation: cardIn 0.5s cubic-bezier(.23,1,.32,1);
-      max-width: 520px; width: 100%;
+      max-width: 560px; width: 100%;
       word-wrap: break-word; overflow-wrap: break-word;
+      flex-shrink: 0;
     }
     .canvas-card + .canvas-card { animation-delay: 0.08s; }
+    .canvas-card:hover {
+      border-color: rgba(255,255,255,0.08);
+      background: rgba(16,16,16,0.95);
+    }
     @keyframes cardIn {
       from { opacity: 0; transform: translateY(20px) scale(0.98); }
       to { opacity: 1; transform: translateY(0) scale(1); }
@@ -758,6 +769,13 @@ It explores how language shapes perception — really thought-provoking."`
       })
 
       canvas.appendChild(container)
+
+      // Check overflow: if content is taller than viewport, align to top
+      requestAnimationFrame(() => {
+        if (container.scrollHeight > container.clientHeight) {
+          container.classList.add('has-overflow')
+        }
+      })
     }
 
     // ── Send (powered by agentic-claw) ──

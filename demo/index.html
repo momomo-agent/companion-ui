@@ -26,12 +26,12 @@
       height: 100vh; display: flex; overflow: hidden;
     }
 
-    /* ── Chat Panel (left) ── */
+    /* ── Chat Panel (left, primary) ── */
     .chat-panel {
-      width: 380px; flex-shrink: 0;
+      flex: 1; min-width: 0;
       display: flex; flex-direction: column;
       background: #0a0a0a;
-      border-right: 1px solid rgba(255,255,255,0.05);
+      border-right: 1px solid rgba(255,255,255,0.04);
     }
 
     .chat-header {
@@ -177,19 +177,19 @@
     .input-area button:hover { opacity: 0.85; }
     .input-area button:disabled { opacity: 0.25; cursor: not-allowed; }
 
-    /* ── Canvas (right) ── */
+    /* ── Canvas (right, secondary) ── */
     .canvas {
-      flex: 1; position: relative; overflow: hidden;
-      background: #060606;
-      background-image: radial-gradient(ellipse at 50% 40%, rgba(232,133,106,0.015) 0%, transparent 70%);
+      width: 420px; flex-shrink: 0;
+      position: relative; overflow: hidden;
+      background: #050505;
     }
     .presence {
       position: absolute; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 48px; opacity: 0.12; color: #e8856a;
-      font-weight: 200;
-      animation: pulse 4s ease-in-out infinite;
+      font-size: 13px; opacity: 0.25; color: #555;
+      font-weight: 400; letter-spacing: 0.5px;
       transition: opacity 0.5s;
+      text-align: center;
     }
     .presence.hidden { opacity: 0; pointer-events: none; }
 
@@ -222,10 +222,10 @@
 
     .canvas-content {
       position: absolute; inset: 0;
-      padding: 40px 48px;
+      padding: 24px 20px;
       display: flex; flex-direction: column;
-      gap: 16px; overflow-y: auto;
-      align-items: center;
+      gap: 12px; overflow-y: auto;
+      align-items: stretch;
     }
     .canvas-content .canvas-card:first-child { margin-top: auto; }
     .canvas-content .canvas-card:last-child { margin-bottom: auto; }
@@ -236,19 +236,19 @@
 
     /* Canvas cards */
     .canvas-card {
-      background: rgba(14,14,14,0.9);
-      border: 1px solid rgba(255,255,255,0.05);
-      border-radius: 14px; padding: 24px 28px;
-      backdrop-filter: blur(16px);
+      background: rgba(10,10,10,0.6);
+      border: 1px solid rgba(255,255,255,0.03);
+      border-radius: 10px; padding: 16px 20px;
+      backdrop-filter: blur(8px);
       animation: cardIn 0.5s cubic-bezier(.23,1,.32,1);
-      max-width: 560px; width: 100%;
+      max-width: 100%; width: 100%;
       word-wrap: break-word; overflow-wrap: break-word;
       flex-shrink: 0;
     }
     .canvas-card + .canvas-card { animation-delay: 0.08s; }
     .canvas-card:hover {
-      border-color: rgba(255,255,255,0.08);
-      background: rgba(16,16,16,0.95);
+      border-color: rgba(255,255,255,0.05);
+      background: rgba(12,12,12,0.7);
     }
     @keyframes cardIn {
       from { opacity: 0; transform: translateY(20px) scale(0.98); }
@@ -403,7 +403,7 @@
       <span class="canvas-nav-page" id="canvasPage">0 / 0</span>
       <button class="canvas-nav-btn" id="canvasNext">›</button>
     </div>
-    <div class="presence" id="presence">∞</div>
+    <div class="presence" id="presence">Canvas will appear here</div>
   </div>
 
   <script type="module">

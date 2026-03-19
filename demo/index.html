@@ -22,7 +22,7 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      background: #060606; color: #d4d4d4;
+      background: #0a0e14; color: #c5d4e8;
       height: 100vh; display: flex; overflow: hidden;
     }
 
@@ -30,8 +30,9 @@
     .chat-panel {
       flex: 1; min-width: 0;
       display: flex; flex-direction: column;
-      background: #0a0a0a;
-      border-right: 1px solid rgba(255,255,255,0.04);
+      background: linear-gradient(180deg, #0d1117 0%, #0a0e14 100%);
+      border-right: 1px solid rgba(232,133,106,0.15);
+      box-shadow: inset -1px 0 0 rgba(232,133,106,0.05);
     }
 
     .chat-header {
@@ -109,11 +110,13 @@
       min-width: 0;
     }
     .message.user .message-content {
-      background: rgba(232,133,106,0.1);
-      color: #ccc; padding: 8px 12px;
+      background: rgba(232,133,106,0.12);
+      color: #e8d4c8; padding: 8px 12px;
       border-radius: 12px 12px 4px 12px;
+      border: 1px solid rgba(232,133,106,0.25);
+      box-shadow: 0 0 15px rgba(232,133,106,0.15);
     }
-    .message.agent .message-content { color: #999; padding: 2px 0; }
+    .message.agent .message-content { color: #a8b8d0; padding: 2px 0; }
     .message.agent .message-content p { margin-bottom: 6px; }
     .message.agent .message-content p:last-child { margin-bottom: 0; }
     .message.agent .message-content strong { color: #d4d4d4; }
@@ -181,15 +184,17 @@
     .canvas {
       width: 420px; flex-shrink: 0;
       position: relative; overflow: hidden;
-      background: #050505;
+      background: #080c12;
+      box-shadow: inset 1px 0 0 rgba(232,133,106,0.08);
     }
     .presence {
       position: absolute; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 13px; opacity: 0.25; color: #555;
+      font-size: 13px; opacity: 0.3; color: #e8856a;
       font-weight: 400; letter-spacing: 0.5px;
       transition: opacity 0.5s;
       text-align: center;
+      text-shadow: 0 0 20px rgba(232,133,106,0.3);
     }
     .presence.hidden { opacity: 0; pointer-events: none; }
 
@@ -235,19 +240,21 @@
 
     /* Canvas cards */
     .canvas-card {
-      background: rgba(10,10,10,0.6);
-      border: 1px solid rgba(255,255,255,0.03);
-      border-radius: 10px; padding: 16px 20px;
-      backdrop-filter: blur(8px);
+      background: rgba(13,17,23,0.6);
+      border: 1px solid rgba(232,133,106,0.2);
+      border-radius: 8px; padding: 16px 20px;
+      backdrop-filter: blur(12px);
       animation: cardIn 0.5s cubic-bezier(.23,1,.32,1);
       max-width: 100%; width: 100%;
       word-wrap: break-word; overflow-wrap: break-word;
       flex-shrink: 0;
+      box-shadow: 0 0 20px rgba(232,133,106,0.1), inset 0 1px 0 rgba(232,133,106,0.1);
     }
     .canvas-card + .canvas-card { animation-delay: 0.08s; }
     .canvas-card:hover {
-      border-color: rgba(255,255,255,0.05);
-      background: rgba(12,12,12,0.7);
+      border-color: rgba(232,133,106,0.35);
+      background: rgba(15,19,26,0.8);
+      box-shadow: 0 0 30px rgba(232,133,106,0.2), inset 0 1px 0 rgba(232,133,106,0.15);
     }
     @keyframes cardIn {
       from { opacity: 0; transform: translateY(20px) scale(0.98); }

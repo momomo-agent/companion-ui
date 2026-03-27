@@ -99,12 +99,12 @@ describe('Config', () => {
 
 describe('Claw Runtime', () => {
   it('createClaw is exported', () => {
-    const { createClaw } = require('../../agentic-claw/claw.js')
+    const { createClaw } = require('../../agentic-claw/agentic-claw.js')
     assert.equal(typeof createClaw, 'function')
   })
 
   it('createClaw requires apiKey', () => {
-    const { createClaw } = require('../../agentic-claw/claw.js')
+    const { createClaw } = require('../../agentic-claw/agentic-claw.js')
     assert.throws(() => createClaw({}), /apiKey/)
   })
 
@@ -119,8 +119,8 @@ describe('Claw Runtime', () => {
     }
     globalThis.AgenticMemory = mockMemory
     globalThis.agenticAsk = async () => ({ answer: 'test', rounds: 1 })
-    delete require.cache[require.resolve('../../agentic-claw/claw.js')]
-    const { createClaw } = require('../../agentic-claw/claw.js')
+    delete require.cache[require.resolve('../../agentic-claw/agentic-claw.js')]
+    const { createClaw } = require('../../agentic-claw/agentic-claw.js')
 
     const claw = createClaw({ apiKey: 'test-key' })
     assert.ok(claw)
@@ -148,8 +148,8 @@ describe('Claw Runtime', () => {
     }
     globalThis.AgenticMemory = mockMemory
     globalThis.agenticAsk = async (input) => ({ answer: `Echo: ${input}`, rounds: 1 })
-    delete require.cache[require.resolve('../../agentic-claw/claw.js')]
-    const { createClaw } = require('../../agentic-claw/claw.js')
+    delete require.cache[require.resolve('../../agentic-claw/agentic-claw.js')]
+    const { createClaw } = require('../../agentic-claw/agentic-claw.js')
 
     const claw = createClaw({ apiKey: 'test-key' })
     const alice = claw.session('alice')
@@ -172,8 +172,8 @@ describe('Claw Runtime', () => {
     }
     globalThis.AgenticMemory = mockMemory
     globalThis.agenticAsk = async (prompt) => ({ answer: `Reply to: ${prompt}`, rounds: 1 })
-    delete require.cache[require.resolve('../../agentic-claw/claw.js')]
-    const { createClaw } = require('../../agentic-claw/claw.js')
+    delete require.cache[require.resolve('../../agentic-claw/agentic-claw.js')]
+    const { createClaw } = require('../../agentic-claw/agentic-claw.js')
 
     const claw = createClaw({ apiKey: 'test-key' })
     const result = await claw.chat('hello')
